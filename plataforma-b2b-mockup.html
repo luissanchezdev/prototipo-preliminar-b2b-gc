@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño Preliminar — Plataforma B2B eLearning | Grupo Colec</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1B5E20;
+            --primary-dark: #0D3B12;
+            --primary-light: #2E7D32;
+            --secondary: #43A047;
+            --accent: #E84D2E;
+            --accent-light: #FF6F50;
+            --bg-dark: #0F1419;
+            --bg-sidebar: #1A2332;
+            --bg-main: #F5F7FA;
+            --bg-card: #FFFFFF;
+            --text-primary: #1A1A2E;
+            --text-secondary: #5A6178;
+            --text-muted: #8E95A9;
+            --text-white: #FFFFFF;
+            --border: #E2E8F0;
+            --border-light: #F1F5F9;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --info: #3B82F6;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg-main); color: var(--text-primary); }
+
+        /* ===== SCREEN NAVIGATOR ===== */
+        .screen-navigator {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 0;
+            box-shadow: var(--shadow-lg);
+        }
+        .nav-top {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .nav-top h1 { color: white; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+        .nav-top .badge { 
+            background: var(--accent); color: white; font-size: 11px; 
+            padding: 3px 10px; border-radius: 20px; font-weight: 600;
+        }
+        .nav-tabs {
+            display: flex; overflow-x: auto; gap: 2px; padding: 0 16px;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .nav-tab {
+            background: transparent; border: none; color: rgba(255,255,255,0.6);
+            padding: 10px 16px; font-size: 12px; font-weight: 500; cursor: pointer;
+            white-space: nowrap; border-bottom: 2px solid transparent;
+            transition: all 0.2s; font-family: inherit;
+        }
+        .nav-tab:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
+        .nav-tab.active { 
+            color: white; border-bottom-color: var(--accent);
+            background: rgba(255,255,255,0.1);
+        }
+        .nav-tab i { margin-right: 6px; }
+        .option-toggle {
+            display: flex; align-items: center; gap: 8px; padding: 8px 24px;
+            background: rgba(0,0,0,0.15); border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .option-toggle span { color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .option-btn {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.7); padding: 4px 14px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            font-family: inherit;
+        }
+        .option-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+        .option-btn:hover:not(.active) { background: rgba(255,255,255,0.2); color: white; }
+        .option-note {
+            margin-left: auto; color: rgba(255,255,255,0.5); font-size: 10px; font-style: italic;
+        }
+
+        /* ===== SCREENS CONTAINER ===== */
+        .screens-container { padding-top: 115px; }
+        .screen { display: none; min-height: calc(100vh - 115px); }
+        .screen.active { display: block; }
+
+        /* ===== LOGIN SCREEN ===== */
+        .login-screen {
+            display: none; min-height: calc(100vh - 115px);
+            background: linear-gradient(135deg, #0D3B12 0%, #1B5E20 50%, #2E7D32 100%);
+            position: relative; overflow: hidden;
+        }
+        .login-screen.active { display: flex; align-items: center; justify-content: center; }
+        .login-bg-pattern {
+            position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .login-container {
+            position: relative; z-index: 1;
+            display: flex; width: 900px; max-width: 95vw;
+            background: white; border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .login-left {
+            flex: 1; padding: 60px 50px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .login-logo {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 40px;
+        }
+        .login-logo-icon {
+            width: 50px; height: 50px; background: var(--primary);
+            border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 22px; font-weight: 800;
+        }
+        .login-logo-text { font-size: 18px; font-weight: 700; color: var(--primary-dark); line-height: 1.2; }
+        .login-logo-text small { display: block; font-size: 11px; color: var(--text-muted); font-weight: 400; letter-spacing: 2px; text-transform: uppercase; }
+        .login-title { font-size: 28px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
+        .login-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 32px; line-height: 1.6; }
+        .login-field { margin-bottom: 20px; }
+        .login-field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+        .login-field input {
+            width: 100%; padding: 12px 16px; border: 2px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;
+            transition: border-color 0.2s; outline: none; background: var(--bg-main);
+        }
+        .login-field input:focus { border-color: var(--primary); background: white; }
+        .login-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .login-remember { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+        .login-forgot { font-size: 13px; color: var(--primary); text-decoration: none; font-weight: 500; }
+        .login-btn {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; border: none; border-radius: var(--radius-sm); font-size: 15px;
+            font-weight: 600; cursor: pointer; transition: all 0.3s; font-family: inherit;
+        }
+        .login-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(27,94,32,0.4); }
+        .login-right {
+            flex: 1; background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            padding: 60px 40px; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; color: white; text-align: center; position: relative;
+        }
+        .login-right-bg {
+            position: absolute; inset: 0; opacity: 0.1;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='white' stroke-width='0.5'/%3E%3C/svg%3E");
+        }
+        .login-right h2 { font-size: 24px; font-weight: 700; margin-bottom: 16px; position: relative; }
+        .login-right p { font-size: 14px; opacity: 0.8; line-height: 1.7; position: relative; max-width: 280px; }
+        .login-features { margin-top: 30px; text-align: left; position: relative; }
+        .login-feature { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 13px; opacity: 0.9; }
+        .login-feature i { color: #81C784; font-size: 14px; }
+        .company-logo-badge {
+            position: absolute; bottom: 30px; right: 30px;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            padding: 8px 16px; border-radius: var(--radius-sm);
+            font-size: 11px; color: rgba(255,255,255,0.7);
+        }
+
+        /* ===== APP LAYOUT ===== */
+        .app-layout { display: flex; min-height: calc(100vh - 115px); }
+        .sidebar {
+            width: 260px; background: var(--bg-sidebar);
+            color: white; padding: 24px 0; flex-shrink: 0;
+            display: flex; flex-direction: column;
+        }
+        .sidebar-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 0 20px; margin-bottom: 30px;
+        }
+        .sidebar-logo-icon {
+            width: 38px; height: 38px; background: var(--primary);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 16px;
+        }
+        .sidebar-logo-text { font-size: 14px; font-weight: 600; }
+        .sidebar-logo-text small { display: block; font-size: 10px; opacity: 0.5; font-weight: 400; }
+        .sidebar-section { padding: 0 12px; margin-bottom: 6px; }
+        .sidebar-section-title {
+            font-size: 10px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1.5px; color: rgba(255,255,255,0.3);
+            padding: 0 12px; margin-bottom: 8px;
+        }
+        .sidebar-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; border-radius: 8px; cursor: pointer;
+            transition: all 0.2s; font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.6);
+        }
+        .sidebar-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.9); }
+        .sidebar-item.active { background: var(--primary); color: white; }
+        .sidebar-item i { width: 18px; text-align: center; font-size: 14px; }
+        .sidebar-item .badge-count {
+            margin-left: auto; background: var(--accent); color: white;
+            font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600;
+        }
+        .sidebar-bottom { margin-top: auto; padding: 0 12px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; }
+        .sidebar-user {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+        }
+        .sidebar-avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700;
+        }
+        .sidebar-user-info { font-size: 12px; font-weight: 500; }
+        .sidebar-user-info small { display: block; font-size: 10px; opacity: 0.5; }
+
+        .main-content { flex: 1; padding: 28px 32px; overflow-y: auto; }
+
+        /* ===== TOP HEADER ===== */
+        .page-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 28px;
+        }
+        .page-header h2 { font-size: 22px; font-weight: 700; color: var(--text-primary); }
+        .page-header .breadcrumb { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .page-header .breadcrumb a { color: var(--primary); text-decoration: none; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .btn {
+            padding: 8px 18px; border-radius: var(--radius-sm); font-size: 13px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; border: none;
+            font-family: inherit; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: white; color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: #d4401f; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .search-box {
+            display: flex; align-items: center; background: white; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 8px 14px; gap: 8px; min-width: 220px;
+        }
+        .search-box i { color: var(--text-muted); font-size: 13px; }
+        .search-box input { border: none; outline: none; font-size: 13px; font-family: inherit; width: 100%; }
+        .notification-bell {
+            width: 38px; height: 38px; border-radius: 50%; background: white;
+            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: relative; color: var(--text-secondary);
+        }
+        .notification-bell .dot {
+            position: absolute; top: 6px; right: 6px; width: 8px; height: 8px;
+            background: var(--accent); border-radius: 50%; border: 2px solid white;
+        }
+
+        /* ===== STAT CARDS ===== */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 28px; }
+        .stat-card {
+            background: white; border-radius: var(--radius-md); padding: 22px;
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+            transition: all 0.2s;
+        }
+        .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .stat-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .stat-card-icon {
+            width: 42px; height: 42px; border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .stat-card-icon.green { background: #E8F5E9; color: var(--primary); }
+        .stat-card-icon.blue { background: #E3F2FD; color: #1565C0; }
+        .stat-card-icon.orange { background: #FFF3E0; color: #E65100; }
+        .stat-card-icon.purple { background: #F3E5F5; color: #6A1B9A; }
+        .stat-card-icon.red { background: #FFEBEE; color: var(--danger); }
+        .stat-card-trend { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+        .stat-card-trend.up { color: var(--success); }
+        .stat-card-trend.down { color: var(--danger); }
+        .stat-card-value { font-size: 28px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; }
+        .stat-card-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+        /* ===== DATA CARDS & PANELS ===== */
+        .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 22px; }
+        .content-grid-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+        .content-grid-full { margin-bottom: 22px; }
+        .card {
+            background: white; border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 22px; border-bottom: 1px solid var(--border-light);
+        }
+        .card-header h3 { font-size: 15px; font-weight: 700; }
+        .card-body { padding: 22px; }
+        .card-body.no-padding { padding: 0; }
+
+        /* ===== TABLES ===== */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            text-align: left; padding: 12px 16px; font-size: 11px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--text-muted); border-bottom: 1px solid var(--border);
+            background: var(--bg-main);
+        }
+        .data-table td {
+            padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+        .data-table tr:hover td { background: #F8FAFC; }
+        .data-table .user-cell { display: flex; align-items: center; gap: 10px; }
+        .data-table .user-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: white;
+        }
+        .data-table .user-name { font-weight: 600; color: var(--text-primary); }
+        .data-table .user-email { font-size: 11px; color: var(--text-muted); }
+
+        /* ===== PROGRESS BARS ===== */
+        .progress-bar { height: 8px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 10px; transition: width 0.5s; }
+        .progress-bar-fill.green { background: linear-gradient(90deg, #43A047, #66BB6A); }
+        .progress-bar-fill.blue { background: linear-gradient(90deg, #1976D2, #42A5F5); }
+        .progress-bar-fill.orange { background: linear-gradient(90deg, #E65100, #FF9800); }
+        .progress-bar-fill.red { background: linear-gradient(90deg, #C62828, #EF5350); }
+        .progress-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .progress-info span { font-size: 12px; color: var(--text-muted); }
+        .progress-info strong { font-size: 13px; color: var(--text-primary); }
+
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+        }
+        .status-badge.completed { background: #E8F5E9; color: #2E7D32; }
+        .status-badge.in-progress { background: #E3F2FD; color: #1565C0; }
+        .status-badge.not-started { background: #F5F5F5; color: #757575; }
+        .status-badge.overdue { background: #FFEBEE; color: #C62828; }
+        .status-badge i { font-size: 8px; }
+
+        /* ===== COURSE CARDS ===== */
+        .courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 20px; }
+        .course-card {
+            background: white; border-radius: var(--radius-md); overflow: hidden;
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+            transition: all 0.3s; cursor: pointer;
+        }
+        .course-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+        .course-card-thumb {
+            height: 140px; position: relative; overflow: hidden;
+        }
+        .course-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .course-card-thumb .thumb-gradient {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.6));
+        }
+        .course-card-thumb .course-duration {
+            position: absolute; bottom: 10px; right: 10px;
+            background: rgba(0,0,0,0.7); color: white; padding: 3px 10px;
+            border-radius: 20px; font-size: 11px; font-weight: 500;
+        }
+        .course-card-thumb .course-type-badge {
+            position: absolute; top: 10px; left: 10px;
+            background: var(--primary); color: white; padding: 3px 10px;
+            border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: uppercase;
+        }
+        .course-card-body { padding: 16px; }
+        .course-card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; line-height: 1.4; }
+        .course-card-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; }
+        .course-card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .course-card-meta span { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+        .course-card-progress { margin-top: 8px; }
+        .course-card-progress .progress-text { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; text-align: right; font-weight: 600; }
+
+        /* ===== LESSON PAGE ===== */
+        .lesson-layout { display: flex; gap: 0; min-height: calc(100vh - 115px); }
+        .lesson-main { flex: 1; background: #0F0F0F; }
+        .lesson-sidebar-right {
+            width: 340px; background: white; border-left: 1px solid var(--border);
+            overflow-y: auto; flex-shrink: 0;
+        }
+        .video-container {
+            width: 100%; aspect-ratio: 16/9; background: #000;
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .video-placeholder {
+            text-align: center; color: rgba(255,255,255,0.8);
+        }
+        .video-placeholder i { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+        .video-placeholder p { font-size: 14px; opacity: 0.6; }
+        .video-controls {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 20px 16px 12px;
+        }
+        .video-progress-bar {
+            height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;
+            margin-bottom: 8px; cursor: pointer; position: relative;
+        }
+        .video-progress-fill { width: 35%; height: 100%; background: var(--accent); border-radius: 2px; position: relative; }
+        .video-progress-fill::after {
+            content: ''; position: absolute; right: -6px; top: -4px;
+            width: 12px; height: 12px; background: var(--accent);
+            border-radius: 50%; border: 2px solid white;
+        }
+        .video-control-buttons { display: flex; justify-content: space-between; align-items: center; }
+        .video-control-buttons .left, .video-control-buttons .right { display: flex; align-items: center; gap: 14px; }
+        .video-control-buttons button {
+            background: none; border: none; color: white; font-size: 16px;
+            cursor: pointer; opacity: 0.8; transition: opacity 0.2s;
+        }
+        .video-control-buttons button:hover { opacity: 1; }
+        .video-time { font-size: 12px; color: rgba(255,255,255,0.7); margin-left: 8px; }
+        .lesson-info { padding: 24px 28px; background: #1A1A1A; color: white; }
+        .lesson-info h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .lesson-info p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.7; }
+        .lesson-nav-btn { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+        .lesson-nav-btn button {
+            padding: 8px 20px; border-radius: var(--radius-sm); font-size: 13px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit;
+        }
+        .lesson-nav-btn .btn-next { background: var(--primary); color: white; border: none; }
+        .lesson-nav-btn .btn-prev { background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2); }
+
+        /* Lesson sidebar */
+        .lesson-sidebar-header {
+            padding: 18px 20px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .lesson-sidebar-header h4 { font-size: 14px; font-weight: 700; }
+        .lesson-sidebar-header .progress-summary { font-size: 12px; color: var(--primary); font-weight: 600; }
+        .lesson-module {
+            border-bottom: 1px solid var(--border-light);
+        }
+        .lesson-module-header {
+            padding: 14px 20px; font-size: 13px; font-weight: 700;
+            color: var(--text-primary); cursor: pointer; display: flex;
+            justify-content: space-between; align-items: center;
+            background: var(--bg-main);
+        }
+        .lesson-module-header .count { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+        .lesson-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 20px; font-size: 13px; cursor: pointer;
+            transition: background 0.2s; border-left: 3px solid transparent;
+        }
+        .lesson-item:hover { background: #F8FAFC; }
+        .lesson-item.active { background: #E8F5E9; border-left-color: var(--primary); }
+        .lesson-item.completed .lesson-check { color: var(--success); }
+        .lesson-check { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+        .lesson-item.completed .lesson-check { border-color: var(--success); background: #E8F5E9; }
+        .lesson-item-info { flex: 1; }
+        .lesson-item-title { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+        .lesson-item-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+        .lesson-item-duration { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+        /* ===== CHARTS (CSS-only bar chart simulation) ===== */
+        .chart-container { padding: 10px 0; }
+        .bar-chart { display: flex; align-items: flex-end; gap: 12px; height: 160px; padding: 0 10px; }
+        .bar-chart-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .bar-chart-bar {
+            width: 100%; border-radius: 4px 4px 0 0; min-height: 8px;
+            transition: height 0.5s;
+        }
+        .bar-chart-label { font-size: 10px; color: var(--text-muted); text-align: center; font-weight: 500; }
+        .bar-chart-value { font-size: 11px; font-weight: 700; color: var(--text-primary); }
+
+        /* ===== DONUT CHART (CSS) ===== */
+        .donut-chart {
+            width: 140px; height: 140px; border-radius: 50%; margin: 0 auto 16px;
+            position: relative;
+            background: conic-gradient(var(--primary) 0% 45%, var(--secondary) 45% 72%, var(--warning) 72% 88%, var(--border) 88% 100%);
+        }
+        .donut-chart::after {
+            content: ''; position: absolute; inset: 25px;
+            background: white; border-radius: 50%;
+        }
+        .donut-center {
+            position: absolute; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 1;
+        }
+        .donut-center .value { font-size: 28px; font-weight: 800; color: var(--text-primary); }
+        .donut-center .label { font-size: 11px; color: var(--text-muted); }
+        .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+        .donut-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+        .donut-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+        /* ===== COMPANY CARDS ===== */
+        .company-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .company-card {
+            background: white; border-radius: var(--radius-md); padding: 22px;
+            box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+            transition: all 0.2s; cursor: pointer;
+        }
+        .company-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .company-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+        .company-card-logo {
+            width: 48px; height: 48px; border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 800; color: white;
+        }
+        .company-card-name { font-size: 15px; font-weight: 700; }
+        .company-card-plan { font-size: 11px; color: var(--text-muted); }
+        .company-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .company-card-stat { text-align: center; padding: 10px; background: var(--bg-main); border-radius: var(--radius-sm); }
+        .company-card-stat .value { font-size: 20px; font-weight: 800; color: var(--text-primary); }
+        .company-card-stat .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ===== OPTION ANNOTATIONS ===== */
+        .option-annotation {
+            display: none; margin-top: 12px; padding: 12px 16px;
+            border-radius: var(--radius-sm); font-size: 12px; line-height: 1.6;
+            border: 1px dashed;
+        }
+        .option-annotation.show { display: block; }
+        .option-annotation.option-a { background: #E3F2FD; border-color: #90CAF9; color: #0D47A1; }
+        .option-annotation.option-b { background: #FFF3E0; border-color: #FFCC80; color: #E65100; }
+        .option-annotation .tag {
+            display: inline-block; padding: 2px 8px; border-radius: 4px;
+            font-size: 10px; font-weight: 700; margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .option-a .tag { background: #1565C0; color: white; }
+        .option-b .tag { background: #E65100; color: white; }
+
+        /* ===== RESPONSIVE MOCKUP NOTE ===== */
+        .mockup-note {
+            background: linear-gradient(135deg, #FFF8E1, #FFFDE7);
+            border: 1px solid #FFE082; border-radius: var(--radius-sm);
+            padding: 12px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+            font-size: 12px; color: #F57F17;
+        }
+        .mockup-note i { font-size: 16px; }
+
+        /* ===== ACTIVITY LIST ===== */
+        .activity-list { }
+        .activity-item {
+            display: flex; gap: 12px; padding: 14px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon {
+            width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; flex-shrink: 0;
+        }
+        .activity-icon.green { background: #E8F5E9; color: var(--primary); }
+        .activity-icon.blue { background: #E3F2FD; color: #1565C0; }
+        .activity-icon.orange { background: #FFF3E0; color: #E65100; }
+        .activity-text { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+        .activity-text strong { color: var(--text-primary); }
+        .activity-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+        .empty-state h4 { font-size: 16px; color: var(--text-secondary); margin-bottom: 6px; }
+        .empty-state p { font-size: 13px; }
+
+        /* Watermark */
+        .watermark {
+            position: fixed; bottom: 12px; right: 16px; z-index: 999;
+            background: rgba(0,0,0,0.6); color: rgba(255,255,255,0.8);
+            padding: 6px 14px; border-radius: 20px; font-size: 10px;
+            font-weight: 600; letter-spacing: 0.5px; backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+
+<!-- SCREEN NAVIGATOR -->
+<div class="screen-navigator">
+    <div class="nav-top">
+        <h1><i class="fas fa-drafting-compass" style="margin-right:8px; opacity:0.7"></i>DISEÑO PRELIMINAR — Plataforma B2B eLearning</h1>
+        <span class="badge">Grupo Colec · Feb 2026</span>
+    </div>
+    <div class="nav-tabs">
+        <button class="nav-tab active" data-screen="login"><i class="fas fa-sign-in-alt"></i>Login</button>
+        <button class="nav-tab" data-screen="employee-dashboard"><i class="fas fa-graduation-cap"></i>Empleado: Dashboard</button>
+        <button class="nav-tab" data-screen="employee-courses"><i class="fas fa-book-open"></i>Empleado: Cursos</button>
+        <button class="nav-tab" data-screen="lesson"><i class="fas fa-play-circle"></i>Lección & Video</button>
+        <button class="nav-tab" data-screen="company-dashboard"><i class="fas fa-building"></i>Empresa: Dashboard</button>
+        <button class="nav-tab" data-screen="company-employees"><i class="fas fa-users"></i>Empresa: Empleados</button>
+        <button class="nav-tab" data-screen="admin-dashboard"><i class="fas fa-shield-alt"></i>Admin: Dashboard</button>
+        <button class="nav-tab" data-screen="admin-companies"><i class="fas fa-city"></i>Admin: Empresas</button>
+    </div>
+    <div class="option-toggle">
+        <span>Opción:</span>
+        <button class="option-btn active" data-option="a">A — Tutor LMS Pro</button>
+        <button class="option-btn" data-option="b">B — LMS Custom</button>
+        <span class="option-note">Las diferencias entre opciones se muestran como anotaciones en cada pantalla</span>
+    </div>
+</div>
+
+<div class="screens-container">
+
+    <!-- ========== 1. LOGIN SCREEN ========== -->
+    <div class="screen login-screen active" id="login">
+        <div class="login-bg-pattern"></div>
+        <div class="login-container">
+            <div class="login-left">
+                <div class="login-logo">
+                    <div class="login-logo-icon">GC</div>
+                    <div class="login-logo-text">
+                        Grupo Colec
+                        <small>Plataforma de Capacitación</small>
+                    </div>
+                </div>
+                <h2 class="login-title">Bienvenido de vuelta</h2>
+                <p class="login-subtitle">Accede a tu plataforma de capacitación corporativa. Si eres nuevo, contacta al administrador de tu empresa.</p>
+                <div class="login-field">
+                    <label>Correo electrónico</label>
+                    <input type="email" placeholder="usuario@empresa.com">
+                </div>
+                <div class="login-field">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••">
+                </div>
+                <div class="login-actions">
+                    <label class="login-remember"><input type="checkbox"> Recordarme</label>
+                    <a href="#" class="login-forgot">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button class="login-btn">Iniciar Sesión</button>
+            </div>
+            <div class="login-right">
+                <div class="login-right-bg"></div>
+                <h2>Capacitación<br>Posconsumo</h2>
+                <p>Formación especializada en gestión ambiental, economía circular y cumplimiento normativo para tu equipo.</p>
+                <div class="login-features">
+                    <div class="login-feature"><i class="fas fa-check-circle"></i> Videos HD con streaming adaptativo</div>
+                    <div class="login-feature"><i class="fas fa-check-circle"></i> Certificados digitales verificables</div>
+                    <div class="login-feature"><i class="fas fa-check-circle"></i> Seguimiento de progreso en tiempo real</div>
+                    <div class="login-feature"><i class="fas fa-check-circle"></i> Reportes empresariales descargables</div>
+                </div>
+                <div class="company-logo-badge">
+                    <i class="fas fa-lock" style="margin-right:4px"></i> Acceso exclusivo empresarial
+                </div>
+            </div>
+        </div>
+        <div class="option-annotation option-a show" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);max-width:700px;z-index:2">
+            <div class="tag">Opción A — Tutor LMS Pro</div>
+            Login implementado como página custom de WordPress que oculta /wp-login.php. Se usa el sistema de autenticación nativo de WP con roles personalizados (company_admin, company_employee).
+        </div>
+        <div class="option-annotation option-b" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);max-width:700px;z-index:2">
+            <div class="tag">Opción B — LMS Custom</div>
+            Login implementado con autenticación nativa de WordPress pero con roles totalmente custom. Sin dependencia de Tutor LMS para la gestión de sesiones. Mayor control sobre flujo de login/registro.
+        </div>
+    </div>
+
+    <!-- ========== 2. EMPLOYEE DASHBOARD ========== -->
+    <div class="screen" id="employee-dashboard">
+        <div class="app-layout">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">GC</div>
+                    <div class="sidebar-logo-text">Grupo Colec<small>Plataforma B2B</small></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Principal</div>
+                    <div class="sidebar-item active"><i class="fas fa-home"></i> Mi Dashboard</div>
+                    <div class="sidebar-item"><i class="fas fa-book-open"></i> Mis Cursos <span class="badge-count">3</span></div>
+                    <div class="sidebar-item"><i class="fas fa-certificate"></i> Certificados</div>
+                    <div class="sidebar-item"><i class="fas fa-chart-line"></i> Mi Progreso</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Soporte</div>
+                    <div class="sidebar-item"><i class="fas fa-question-circle"></i> Preguntas Frecuentes</div>
+                    <div class="sidebar-item"><i class="fas fa-headset"></i> Contactar Soporte</div>
+                </div>
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar">MR</div>
+                        <div class="sidebar-user-info">
+                            María Rodríguez
+                            <small>Ecopetrol S.A.</small>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="main-content">
+                <div class="page-header">
+                    <div>
+                        <h2>¡Hola, María! 👋</h2>
+                        <div class="breadcrumb">Tienes <strong style="color:var(--primary)">2 cursos pendientes</strong> por completar esta semana</div>
+                    </div>
+                    <div class="header-actions">
+                        <div class="notification-bell"><i class="fas fa-bell"></i><span class="dot"></span></div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon green"><i class="fas fa-book"></i></div>
+                            <div class="stat-card-trend up"><i class="fas fa-arrow-up"></i> Activos</div>
+                        </div>
+                        <div class="stat-card-value">3</div>
+                        <div class="stat-card-label">Cursos Asignados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon blue"><i class="fas fa-check-circle"></i></div>
+                        </div>
+                        <div class="stat-card-value">1</div>
+                        <div class="stat-card-label">Cursos Completados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon orange"><i class="fas fa-clock"></i></div>
+                        </div>
+                        <div class="stat-card-value">4.5h</div>
+                        <div class="stat-card-label">Tiempo de Estudio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon purple"><i class="fas fa-trophy"></i></div>
+                        </div>
+                        <div class="stat-card-value">67%</div>
+                        <div class="stat-card-label">Avance General</div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-fire" style="color:var(--accent);margin-right:8px"></i>Continuar Aprendiendo</h3>
+                            <a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;font-weight:600">Ver todos →</a>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex;gap:16px;margin-bottom:18px;padding:16px;background:var(--bg-main);border-radius:var(--radius-sm);cursor:pointer">
+                                <div style="width:100px;height:70px;background:linear-gradient(135deg,#1B5E20,#43A047);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                    <i class="fas fa-recycle" style="color:white;font-size:24px"></i>
+                                </div>
+                                <div style="flex:1">
+                                    <div style="font-size:14px;font-weight:700;margin-bottom:4px">Gestión de Residuos de Envases y Empaques</div>
+                                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Resolución 1407 de 2018 · En progreso</div>
+                                    <div class="progress-info"><span>Lección 5 de 8</span><strong>62%</strong></div>
+                                    <div class="progress-bar"><div class="progress-bar-fill green" style="width:62%"></div></div>
+                                </div>
+                                <button class="btn btn-primary btn-sm" style="align-self:center">Continuar <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                            <div style="display:flex;gap:16px;padding:16px;background:var(--bg-main);border-radius:var(--radius-sm);cursor:pointer">
+                                <div style="width:100px;height:70px;background:linear-gradient(135deg,#0D47A1,#1976D2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                    <i class="fas fa-bolt" style="color:white;font-size:24px"></i>
+                                </div>
+                                <div style="flex:1">
+                                    <div style="font-size:14px;font-weight:700;margin-bottom:4px">Gestión de RAEE — Aparatos Eléctricos</div>
+                                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Resolución 851 de 2022 · En progreso</div>
+                                    <div class="progress-info"><span>Lección 2 de 6</span><strong>33%</strong></div>
+                                    <div class="progress-bar"><div class="progress-bar-fill blue" style="width:33%"></div></div>
+                                </div>
+                                <button class="btn btn-outline btn-sm" style="align-self:center">Continuar <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bell" style="color:var(--warning);margin-right:8px"></i>Actividad Reciente</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon green"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="activity-text">Completaste la lección <strong>"Tipos de Envases"</strong></div>
+                                        <div class="activity-time">Hace 2 horas</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon blue"><i class="fas fa-play"></i></div>
+                                    <div>
+                                        <div class="activity-text">Iniciaste el curso <strong>"Gestión de RAEE"</strong></div>
+                                        <div class="activity-time">Ayer, 3:45 PM</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon orange"><i class="fas fa-award"></i></div>
+                                    <div>
+                                        <div class="activity-text">¡Obtuviste <strong>92%</strong> en el Quiz de Regulación!</div>
+                                        <div class="activity-time">25 Feb, 10:20 AM</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 3. EMPLOYEE COURSES ========== -->
+    <div class="screen" id="employee-courses">
+        <div class="app-layout">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">GC</div>
+                    <div class="sidebar-logo-text">Grupo Colec<small>Plataforma B2B</small></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Principal</div>
+                    <div class="sidebar-item"><i class="fas fa-home"></i> Mi Dashboard</div>
+                    <div class="sidebar-item active"><i class="fas fa-book-open"></i> Mis Cursos <span class="badge-count">3</span></div>
+                    <div class="sidebar-item"><i class="fas fa-certificate"></i> Certificados</div>
+                    <div class="sidebar-item"><i class="fas fa-chart-line"></i> Mi Progreso</div>
+                </div>
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar">MR</div>
+                        <div class="sidebar-user-info">María Rodríguez<small>Ecopetrol S.A.</small></div>
+                    </div>
+                </div>
+            </nav>
+            <div class="main-content">
+                <div class="page-header">
+                    <div>
+                        <h2>Mis Cursos</h2>
+                        <div class="breadcrumb">3 cursos asignados por tu empresa</div>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box"><i class="fas fa-search"></i><input placeholder="Buscar curso..."></div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-bottom:20px">
+                    <button class="btn btn-primary btn-sm">Todos (3)</button>
+                    <button class="btn btn-outline btn-sm">En Progreso (2)</button>
+                    <button class="btn btn-outline btn-sm">Completados (1)</button>
+                    <button class="btn btn-outline btn-sm">No Iniciados (0)</button>
+                </div>
+
+                <div class="courses-grid">
+                    <div class="course-card">
+                        <div class="course-card-thumb" style="background:linear-gradient(135deg,#1B5E20,#43A047)">
+                            <div style="display:flex;align-items:center;justify-content:center;height:100%">
+                                <i class="fas fa-recycle" style="font-size:48px;color:rgba(255,255,255,0.3)"></i>
+                            </div>
+                            <div class="thumb-gradient"></div>
+                            <span class="course-duration"><i class="fas fa-clock"></i> 3.5h</span>
+                            <span class="course-type-badge">Obligatorio</span>
+                        </div>
+                        <div class="course-card-body">
+                            <div class="course-card-title">Gestión de Residuos de Envases y Empaques</div>
+                            <div class="course-card-desc">Cumplimiento de la Resolución 1407 de 2018 y la Resolución 0923 de 2024.</div>
+                            <div class="course-card-meta">
+                                <span><i class="fas fa-layer-group"></i> 8 lecciones</span>
+                                <span><i class="fas fa-file-alt"></i> 2 evaluaciones</span>
+                            </div>
+                            <div class="course-card-progress">
+                                <div class="progress-text">62% completado</div>
+                                <div class="progress-bar"><div class="progress-bar-fill green" style="width:62%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="course-card-thumb" style="background:linear-gradient(135deg,#0D47A1,#1976D2)">
+                            <div style="display:flex;align-items:center;justify-content:center;height:100%">
+                                <i class="fas fa-bolt" style="font-size:48px;color:rgba(255,255,255,0.3)"></i>
+                            </div>
+                            <div class="thumb-gradient"></div>
+                            <span class="course-duration"><i class="fas fa-clock"></i> 2.5h</span>
+                            <span class="course-type-badge">Obligatorio</span>
+                        </div>
+                        <div class="course-card-body">
+                            <div class="course-card-title">Gestión de RAEE — Aparatos Eléctricos y Electrónicos</div>
+                            <div class="course-card-desc">Resolución 851 de 2022. Estrategias de recolección y gestión posconsumo.</div>
+                            <div class="course-card-meta">
+                                <span><i class="fas fa-layer-group"></i> 6 lecciones</span>
+                                <span><i class="fas fa-file-alt"></i> 1 evaluación</span>
+                            </div>
+                            <div class="course-card-progress">
+                                <div class="progress-text">33% completado</div>
+                                <div class="progress-bar"><div class="progress-bar-fill blue" style="width:33%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-card">
+                        <div class="course-card-thumb" style="background:linear-gradient(135deg,#E65100,#FF9800)">
+                            <div style="display:flex;align-items:center;justify-content:center;height:100%">
+                                <i class="fas fa-lightbulb" style="font-size:48px;color:rgba(255,255,255,0.3)"></i>
+                            </div>
+                            <div class="thumb-gradient"></div>
+                            <span class="course-duration"><i class="fas fa-clock"></i> 1.5h</span>
+                        </div>
+                        <div class="course-card-body">
+                            <div class="course-card-title">Iluminación Sostenible — Signify</div>
+                            <div class="course-card-desc">Gestión posconsumo de residuos de iluminación y luminarias.</div>
+                            <div class="course-card-meta">
+                                <span><i class="fas fa-layer-group"></i> 5 lecciones</span>
+                                <span><i class="fas fa-file-alt"></i> 1 evaluación</span>
+                            </div>
+                            <div class="course-card-progress">
+                                <div class="progress-text" style="color:var(--success)">✓ Completado</div>
+                                <div class="progress-bar"><div class="progress-bar-fill green" style="width:100%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-annotation option-a show" style="margin-top:24px">
+                    <div class="tag">Opción A — Sobre Tutor LMS Pro</div>
+                    Los cursos se gestionan con los Custom Post Types nativos de Tutor LMS. El grid visual se logra con un tema child personalizado que sobrescribe los templates de Tutor LMS (archive-courses.php). Los filtros usan la API REST de Tutor LMS.
+                </div>
+                <div class="option-annotation option-b" style="margin-top:24px">
+                    <div class="tag">Opción B — LMS Custom</div>
+                    Los cursos son CPTs propios (colec_curso) con meta fields optimizados. El grid visual, los filtros y los conteos son queries directas a la tabla wp_colec_progress — más rápido, sin overhead del sistema de reportería de Tutor LMS. Mayor control sobre el diseño.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 4. LESSON & VIDEO ========== -->
+    <div class="screen" id="lesson">
+        <div class="lesson-layout">
+            <div class="lesson-main">
+                <div class="video-container">
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Reproductor de Video — Bunny.net Stream</p>
+                        <p style="font-size:11px;margin-top:8px;opacity:0.4">Streaming HLS adaptativo · CDN Latam · Sin carga en servidor</p>
+                    </div>
+                    <div class="video-controls">
+                        <div class="video-progress-bar">
+                            <div class="video-progress-fill"></div>
+                        </div>
+                        <div class="video-control-buttons">
+                            <div class="left">
+                                <button><i class="fas fa-play"></i></button>
+                                <button><i class="fas fa-step-forward"></i></button>
+                                <button><i class="fas fa-volume-up"></i></button>
+                                <span class="video-time">05:23 / 14:47</span>
+                            </div>
+                            <div class="right">
+                                <button style="font-size:12px;font-family:inherit;font-weight:600">720p</button>
+                                <button><i class="fas fa-closed-captioning"></i></button>
+                                <button><i class="fas fa-cog"></i></button>
+                                <button><i class="fas fa-expand"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lesson-info">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                        <span class="status-badge in-progress"><i class="fas fa-circle"></i> En progreso</span>
+                        <span style="font-size:12px;color:rgba(255,255,255,0.4)">Lección 5 de 8</span>
+                    </div>
+                    <h3>Clasificación de Residuos de Envases según la Resolución 1407</h3>
+                    <p style="margin-top:10px">En esta lección aprenderás a identificar y clasificar correctamente los diferentes tipos de residuos de envases y empaques según la normativa vigente. Se cubren las categorías principales: plástico, cartón, vidrio y metales, con ejemplos prácticos de cada una.</p>
+                    <div class="lesson-nav-btn">
+                        <button class="btn-prev"><i class="fas fa-arrow-left"></i> Anterior</button>
+                        <button class="btn-next">Siguiente Lección <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <div style="margin-top:16px;padding:14px;background:rgba(232,77,46,0.15);border:1px solid rgba(232,77,46,0.3);border-radius:8px;font-size:12px;color:#FF8A65">
+                        <i class="fas fa-info-circle" style="margin-right:6px"></i>
+                        <strong>Control de progreso activo:</strong> Debes ver el video completo para marcar esta lección como completada. No se permite adelantar el video.
+                    </div>
+                </div>
+            </div>
+            <div class="lesson-sidebar-right">
+                <div class="lesson-sidebar-header">
+                    <h4>Contenido del Curso</h4>
+                    <span class="progress-summary">62% completado</span>
+                </div>
+                <div class="lesson-module">
+                    <div class="lesson-module-header">
+                        Módulo 1: Introducción
+                        <span class="count">3 lecciones · ✓</span>
+                    </div>
+                    <div class="lesson-item completed">
+                        <div class="lesson-check"><i class="fas fa-check"></i></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title">Bienvenida al curso</div>
+                            <div class="lesson-item-meta"><i class="fas fa-video" style="margin-right:3px"></i> Video</div>
+                        </div>
+                        <span class="lesson-item-duration">3:20</span>
+                    </div>
+                    <div class="lesson-item completed">
+                        <div class="lesson-check"><i class="fas fa-check"></i></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title">Marco legal colombiano</div>
+                            <div class="lesson-item-meta"><i class="fas fa-video" style="margin-right:3px"></i> Video</div>
+                        </div>
+                        <span class="lesson-item-duration">12:45</span>
+                    </div>
+                    <div class="lesson-item completed">
+                        <div class="lesson-check"><i class="fas fa-check"></i></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title">¿Qué es la Resolución 1407?</div>
+                            <div class="lesson-item-meta"><i class="fas fa-video" style="margin-right:3px"></i> Video + PDF</div>
+                        </div>
+                        <span class="lesson-item-duration">18:30</span>
+                    </div>
+                </div>
+                <div class="lesson-module">
+                    <div class="lesson-module-header">
+                        Módulo 2: Tipos de Residuos
+                        <span class="count">3 lecciones</span>
+                    </div>
+                    <div class="lesson-item completed">
+                        <div class="lesson-check"><i class="fas fa-check"></i></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title">Tipos de envases regulados</div>
+                            <div class="lesson-item-meta"><i class="fas fa-video" style="margin-right:3px"></i> Video</div>
+                        </div>
+                        <span class="lesson-item-duration">15:10</span>
+                    </div>
+                    <div class="lesson-item active">
+                        <div class="lesson-check" style="border-color:var(--primary);background:var(--primary);color:white"><i class="fas fa-play" style="font-size:8px"></i></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title" style="font-weight:700">Clasificación según Res. 1407</div>
+                            <div class="lesson-item-meta"><i class="fas fa-video" style="margin-right:3px"></i> Video · 14:47</div>
+                        </div>
+                        <span class="lesson-item-duration" style="color:var(--primary);font-weight:600">5:23</span>
+                    </div>
+                    <div class="lesson-item">
+                        <div class="lesson-check"></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title">Evaluación: Módulo 2</div>
+                            <div class="lesson-item-meta"><i class="fas fa-file-alt" style="margin-right:3px"></i> Quiz · 10 preguntas</div>
+                        </div>
+                        <span class="lesson-item-duration">~15 min</span>
+                    </div>
+                </div>
+                <div class="lesson-module">
+                    <div class="lesson-module-header" style="color:var(--text-muted)">
+                        Módulo 3: Plan de Gestión
+                        <span class="count">2 lecciones · 🔒</span>
+                    </div>
+                    <div class="lesson-item" style="opacity:0.5">
+                        <div class="lesson-check"><i class="fas fa-lock" style="font-size:8px;color:var(--text-muted)"></i></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title">Diseñar un plan de gestión</div>
+                            <div class="lesson-item-meta">Requiere completar Módulo 2</div>
+                        </div>
+                        <span class="lesson-item-duration">22:00</span>
+                    </div>
+                    <div class="lesson-item" style="opacity:0.5">
+                        <div class="lesson-check"><i class="fas fa-lock" style="font-size:8px;color:var(--text-muted)"></i></div>
+                        <div class="lesson-item-info">
+                            <div class="lesson-item-title">Evaluación Final + Certificado</div>
+                            <div class="lesson-item-meta">Quiz final · Nota mínima: 70%</div>
+                        </div>
+                        <span class="lesson-item-duration">~20 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 5. COMPANY ADMIN DASHBOARD ========== -->
+    <div class="screen" id="company-dashboard">
+        <div class="app-layout">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon" style="background:#1565C0">EP</div>
+                    <div class="sidebar-logo-text">Ecopetrol S.A.<small>Panel Empresarial</small></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Gestión</div>
+                    <div class="sidebar-item active"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+                    <div class="sidebar-item"><i class="fas fa-users"></i> Empleados <span class="badge-count">45</span></div>
+                    <div class="sidebar-item"><i class="fas fa-book"></i> Cursos Asignados</div>
+                    <div class="sidebar-item"><i class="fas fa-chart-bar"></i> Reportes</div>
+                    <div class="sidebar-item"><i class="fas fa-download"></i> Exportar Datos</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Configuración</div>
+                    <div class="sidebar-item"><i class="fas fa-palette"></i> Personalización</div>
+                    <div class="sidebar-item"><i class="fas fa-user-plus"></i> Agregar Empleados</div>
+                </div>
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar" style="background:linear-gradient(135deg,#1565C0,#1976D2)">CA</div>
+                        <div class="sidebar-user-info">Carlos Administrador<small>Admin — Ecopetrol S.A.</small></div>
+                    </div>
+                </div>
+            </nav>
+            <div class="main-content">
+                <div class="mockup-note">
+                    <i class="fas fa-star"></i>
+                    <span><strong>Panel Empresarial B2B</strong> — Esta es la interfaz que verá el líder/administrador de cada empresa cliente. NO es WordPress admin. Es un dashboard frontend exclusivo para gestionar la capacitación de sus empleados.</span>
+                </div>
+
+                <div class="page-header">
+                    <div>
+                        <h2>Dashboard Empresarial</h2>
+                        <div class="breadcrumb">Ecopetrol S.A. · Último reporte: Hace 2 horas</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-outline"><i class="fas fa-download"></i> Exportar PDF</button>
+                        <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Agregar Empleado</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon blue"><i class="fas fa-users"></i></div>
+                            <div class="stat-card-trend up"><i class="fas fa-arrow-up"></i> +5 este mes</div>
+                        </div>
+                        <div class="stat-card-value">45</div>
+                        <div class="stat-card-label">Empleados Activos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon green"><i class="fas fa-graduation-cap"></i></div>
+                            <div class="stat-card-trend up"><i class="fas fa-arrow-up"></i> +12%</div>
+                        </div>
+                        <div class="stat-card-value">73%</div>
+                        <div class="stat-card-label">Avance Promedio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon orange"><i class="fas fa-certificate"></i></div>
+                        </div>
+                        <div class="stat-card-value">28</div>
+                        <div class="stat-card-label">Certificados Emitidos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                        </div>
+                        <div class="stat-card-value">7</div>
+                        <div class="stat-card-label">Empleados Inactivos (+7 días)</div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Progreso por Curso</h3>
+                            <button class="btn btn-outline btn-sm"><i class="fas fa-filter"></i> Filtrar</button>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom:20px">
+                                <div class="progress-info"><strong>Gestión de Residuos de Envases</strong><strong style="color:var(--primary)">78%</strong></div>
+                                <div class="progress-bar" style="height:12px"><div class="progress-bar-fill green" style="width:78%"></div></div>
+                                <div style="display:flex;justify-content:space-between;margin-top:4px">
+                                    <span style="font-size:11px;color:var(--text-muted)">35 de 45 empleados activos</span>
+                                    <span style="font-size:11px;color:var(--success);font-weight:600">12 completados</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom:20px">
+                                <div class="progress-info"><strong>Gestión de RAEE</strong><strong style="color:#1565C0">54%</strong></div>
+                                <div class="progress-bar" style="height:12px"><div class="progress-bar-fill blue" style="width:54%"></div></div>
+                                <div style="display:flex;justify-content:space-between;margin-top:4px">
+                                    <span style="font-size:11px;color:var(--text-muted)">28 de 45 empleados activos</span>
+                                    <span style="font-size:11px;color:var(--success);font-weight:600">5 completados</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="progress-info"><strong>Iluminación Sostenible — Signify</strong><strong style="color:#E65100">31%</strong></div>
+                                <div class="progress-bar" style="height:12px"><div class="progress-bar-fill orange" style="width:31%"></div></div>
+                                <div style="display:flex;justify-content:space-between;margin-top:4px">
+                                    <span style="font-size:11px;color:var(--text-muted)">18 de 45 empleados activos</span>
+                                    <span style="font-size:11px;color:var(--success);font-weight:600">2 completados</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Distribución General</h3>
+                        </div>
+                        <div class="card-body" style="text-align:center">
+                            <div class="donut-chart">
+                                <div class="donut-center">
+                                    <div class="value">73%</div>
+                                    <div class="label">promedio</div>
+                                </div>
+                            </div>
+                            <div class="donut-legend">
+                                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--primary)"></div> Completados (45%)</div>
+                                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--secondary)"></div> En progreso (27%)</div>
+                                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--warning)"></div> Pendientes (16%)</div>
+                                <div class="donut-legend-item"><div class="donut-legend-dot" style="background:var(--border)"></div> Inactivos (12%)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:22px">
+                    <div class="card-header">
+                        <h3>Empleados que Requieren Atención</h3>
+                        <span style="font-size:12px;color:var(--danger);font-weight:600"><i class="fas fa-exclamation-circle"></i> 7 empleados sin actividad</span>
+                    </div>
+                    <div class="card-body no-padding">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Último Acceso</th>
+                                    <th>Cursos Asignados</th>
+                                    <th>Avance</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#E53935">JL</div>
+                                            <div><div class="user-name">Juan López</div><div class="user-email">j.lopez@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--danger);font-weight:600">Hace 15 días</td>
+                                    <td>3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:80px"><div class="progress-bar-fill red" style="width:12%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">12%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge overdue"><i class="fas fa-circle"></i> Inactivo</span></td>
+                                    <td><button class="btn btn-accent btn-sm"><i class="fas fa-bell"></i> Notificar</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#FF9800">AP</div>
+                                            <div><div class="user-name">Ana Pérez</div><div class="user-email">a.perez@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--warning);font-weight:600">Hace 10 días</td>
+                                    <td>2</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:80px"><div class="progress-bar-fill orange" style="width:25%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">25%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge overdue"><i class="fas fa-circle"></i> Inactivo</span></td>
+                                    <td><button class="btn btn-accent btn-sm"><i class="fas fa-bell"></i> Notificar</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#7B1FA2">DG</div>
+                                            <div><div class="user-name">Diego García</div><div class="user-email">d.garcia@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--warning);font-weight:600">Hace 8 días</td>
+                                    <td>3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:80px"><div class="progress-bar-fill orange" style="width:40%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">40%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge overdue"><i class="fas fa-circle"></i> Inactivo</span></td>
+                                    <td><button class="btn btn-accent btn-sm"><i class="fas fa-bell"></i> Notificar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 6. COMPANY EMPLOYEES ========== -->
+    <div class="screen" id="company-employees">
+        <div class="app-layout">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon" style="background:#1565C0">EP</div>
+                    <div class="sidebar-logo-text">Ecopetrol S.A.<small>Panel Empresarial</small></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Gestión</div>
+                    <div class="sidebar-item"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
+                    <div class="sidebar-item active"><i class="fas fa-users"></i> Empleados <span class="badge-count">45</span></div>
+                    <div class="sidebar-item"><i class="fas fa-book"></i> Cursos Asignados</div>
+                    <div class="sidebar-item"><i class="fas fa-chart-bar"></i> Reportes</div>
+                    <div class="sidebar-item"><i class="fas fa-download"></i> Exportar Datos</div>
+                </div>
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar" style="background:linear-gradient(135deg,#1565C0,#1976D2)">CA</div>
+                        <div class="sidebar-user-info">Carlos Administrador<small>Admin — Ecopetrol S.A.</small></div>
+                    </div>
+                </div>
+            </nav>
+            <div class="main-content">
+                <div class="page-header">
+                    <div>
+                        <h2>Gestión de Empleados</h2>
+                        <div class="breadcrumb"><a href="#">Dashboard</a> / Empleados</div>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box"><i class="fas fa-search"></i><input placeholder="Buscar empleado..."></div>
+                        <button class="btn btn-outline"><i class="fas fa-file-csv"></i> Importar CSV</button>
+                        <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Nuevo Empleado</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display:flex;gap:8px">
+                            <button class="btn btn-primary btn-sm">Todos (45)</button>
+                            <button class="btn btn-outline btn-sm">Activos (38)</button>
+                            <button class="btn btn-outline btn-sm">Inactivos (7)</button>
+                        </div>
+                        <button class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Exportar Excel</button>
+                    </div>
+                    <div class="card-body no-padding">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Cargo</th>
+                                    <th>Cursos Completados</th>
+                                    <th>Avance General</th>
+                                    <th>Último Acceso</th>
+                                    <th>Estado</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#2E7D32">MR</div>
+                                            <div><div class="user-name">María Rodríguez</div><div class="user-email">m.rodriguez@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Coord. Ambiental</td>
+                                    <td>1 de 3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:100px"><div class="progress-bar-fill green" style="width:67%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">67%</span>
+                                        </div>
+                                    </td>
+                                    <td>Hoy, 10:30 AM</td>
+                                    <td><span class="status-badge completed"><i class="fas fa-circle"></i> Activo</span></td>
+                                    <td><button class="btn btn-outline btn-sm">Ver Detalle</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#1565C0">PS</div>
+                                            <div><div class="user-name">Pedro Sánchez</div><div class="user-email">p.sanchez@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Ing. Procesos</td>
+                                    <td>3 de 3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:100px"><div class="progress-bar-fill green" style="width:100%"></div></div>
+                                            <span style="font-size:12px;font-weight:600;color:var(--success)">100%</span>
+                                        </div>
+                                    </td>
+                                    <td>Ayer, 4:15 PM</td>
+                                    <td><span class="status-badge completed"><i class="fas fa-circle"></i> Completo</span></td>
+                                    <td><button class="btn btn-outline btn-sm">Ver Detalle</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#E65100">LM</div>
+                                            <div><div class="user-name">Laura Martínez</div><div class="user-email">l.martinez@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Analista HSE</td>
+                                    <td>2 de 3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:100px"><div class="progress-bar-fill blue" style="width:83%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">83%</span>
+                                        </div>
+                                    </td>
+                                    <td>Hoy, 9:00 AM</td>
+                                    <td><span class="status-badge in-progress"><i class="fas fa-circle"></i> En curso</span></td>
+                                    <td><button class="btn btn-outline btn-sm">Ver Detalle</button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#E53935">JL</div>
+                                            <div><div class="user-name">Juan López</div><div class="user-email">j.lopez@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Operador Planta</td>
+                                    <td>0 de 3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:100px"><div class="progress-bar-fill red" style="width:12%"></div></div>
+                                            <span style="font-size:12px;font-weight:600;color:var(--danger)">12%</span>
+                                        </div>
+                                    </td>
+                                    <td style="color:var(--danger)">Hace 15 días</td>
+                                    <td><span class="status-badge overdue"><i class="fas fa-circle"></i> Inactivo</span></td>
+                                    <td><button class="btn btn-accent btn-sm"><i class="fas fa-bell"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#6A1B9A">CV</div>
+                                            <div><div class="user-name">Camila Vargas</div><div class="user-email">c.vargas@ecopetrol.com</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Dir. Sostenibilidad</td>
+                                    <td>1 de 2</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:100px"><div class="progress-bar-fill blue" style="width:55%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">55%</span>
+                                        </div>
+                                    </td>
+                                    <td>Ayer, 2:30 PM</td>
+                                    <td><span class="status-badge in-progress"><i class="fas fa-circle"></i> En curso</span></td>
+                                    <td><button class="btn btn-outline btn-sm">Ver Detalle</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
+                    <span style="font-size:12px;color:var(--text-muted)">Mostrando 5 de 45 empleados</span>
+                    <div style="display:flex;gap:4px">
+                        <button class="btn btn-outline btn-sm" style="min-width:36px">‹</button>
+                        <button class="btn btn-primary btn-sm" style="min-width:36px">1</button>
+                        <button class="btn btn-outline btn-sm" style="min-width:36px">2</button>
+                        <button class="btn btn-outline btn-sm" style="min-width:36px">3</button>
+                        <button class="btn btn-outline btn-sm" style="min-width:36px">›</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 7. SUPER ADMIN DASHBOARD ========== -->
+    <div class="screen" id="admin-dashboard">
+        <div class="app-layout">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">GC</div>
+                    <div class="sidebar-logo-text">Grupo Colec<small>Super Administrador</small></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Administración</div>
+                    <div class="sidebar-item active"><i class="fas fa-tachometer-alt"></i> Dashboard General</div>
+                    <div class="sidebar-item"><i class="fas fa-city"></i> Empresas <span class="badge-count">23</span></div>
+                    <div class="sidebar-item"><i class="fas fa-book"></i> Gestión de Cursos</div>
+                    <div class="sidebar-item"><i class="fas fa-users"></i> Todos los Usuarios</div>
+                    <div class="sidebar-item"><i class="fas fa-chart-pie"></i> Analíticas</div>
+                    <div class="sidebar-item"><i class="fas fa-file-alt"></i> Reportes Globales</div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Sistema</div>
+                    <div class="sidebar-item"><i class="fas fa-video"></i> Bunny.net CDN</div>
+                    <div class="sidebar-item"><i class="fas fa-cog"></i> Configuración</div>
+                    <div class="sidebar-item"><i class="fas fa-shield-alt"></i> Seguridad</div>
+                </div>
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar" style="background:linear-gradient(135deg,var(--primary),var(--secondary))">LS</div>
+                        <div class="sidebar-user-info">Admin Grupo Colec<small>Super Administrador</small></div>
+                    </div>
+                </div>
+            </nav>
+            <div class="main-content">
+                <div class="mockup-note">
+                    <i class="fas fa-crown"></i>
+                    <span><strong>Panel Super Administrador</strong> — Vista exclusiva para el equipo de Grupo Colec. Gestión integral de todas las empresas cliente, cursos, usuarios y métricas globales de la plataforma.</span>
+                </div>
+
+                <div class="page-header">
+                    <div>
+                        <h2>Dashboard General</h2>
+                        <div class="breadcrumb">Plataforma B2B eLearning · Todas las empresas</div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-outline"><i class="fas fa-download"></i> Reporte Global</button>
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Nueva Empresa</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon green"><i class="fas fa-city"></i></div>
+                            <div class="stat-card-trend up"><i class="fas fa-arrow-up"></i> +3</div>
+                        </div>
+                        <div class="stat-card-value">23</div>
+                        <div class="stat-card-label">Empresas Activas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon blue"><i class="fas fa-users"></i></div>
+                            <div class="stat-card-trend up"><i class="fas fa-arrow-up"></i> +47</div>
+                        </div>
+                        <div class="stat-card-value">342</div>
+                        <div class="stat-card-label">Empleados Registrados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon orange"><i class="fas fa-play-circle"></i></div>
+                        </div>
+                        <div class="stat-card-value">1,247</div>
+                        <div class="stat-card-label">Lecciones Completadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-card-icon purple"><i class="fas fa-certificate"></i></div>
+                        </div>
+                        <div class="stat-card-value">89</div>
+                        <div class="stat-card-label">Certificados Emitidos</div>
+                    </div>
+                </div>
+
+                <div class="content-grid-equal">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Top 5 Empresas por Avance</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom:16px">
+                                <div class="progress-info"><strong>Bavaria S.A.</strong><strong style="color:var(--primary)">92%</strong></div>
+                                <div class="progress-bar" style="height:10px"><div class="progress-bar-fill green" style="width:92%"></div></div>
+                            </div>
+                            <div style="margin-bottom:16px">
+                                <div class="progress-info"><strong>Ecopetrol S.A.</strong><strong style="color:var(--primary)">73%</strong></div>
+                                <div class="progress-bar" style="height:10px"><div class="progress-bar-fill green" style="width:73%"></div></div>
+                            </div>
+                            <div style="margin-bottom:16px">
+                                <div class="progress-info"><strong>Grupo Éxito</strong><strong style="color:#1565C0">68%</strong></div>
+                                <div class="progress-bar" style="height:10px"><div class="progress-bar-fill blue" style="width:68%"></div></div>
+                            </div>
+                            <div style="margin-bottom:16px">
+                                <div class="progress-info"><strong>Alpina S.A.</strong><strong style="color:#1565C0">55%</strong></div>
+                                <div class="progress-bar" style="height:10px"><div class="progress-bar-fill blue" style="width:55%"></div></div>
+                            </div>
+                            <div>
+                                <div class="progress-info"><strong>Nutresa</strong><strong style="color:#E65100">41%</strong></div>
+                                <div class="progress-bar" style="height:10px"><div class="progress-bar-fill orange" style="width:41%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Actividad de la Plataforma</h3>
+                            <span style="font-size:11px;color:var(--text-muted)">Últimos 7 días</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <div class="bar-chart">
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-value">42</div>
+                                        <div class="bar-chart-bar" style="height:60%;background:var(--primary)"></div>
+                                        <div class="bar-chart-label">Lun</div>
+                                    </div>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-value">58</div>
+                                        <div class="bar-chart-bar" style="height:82%;background:var(--primary)"></div>
+                                        <div class="bar-chart-label">Mar</div>
+                                    </div>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-value">35</div>
+                                        <div class="bar-chart-bar" style="height:50%;background:var(--primary)"></div>
+                                        <div class="bar-chart-label">Mié</div>
+                                    </div>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-value">67</div>
+                                        <div class="bar-chart-bar" style="height:95%;background:var(--primary)"></div>
+                                        <div class="bar-chart-label">Jue</div>
+                                    </div>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-value">52</div>
+                                        <div class="bar-chart-bar" style="height:74%;background:var(--primary)"></div>
+                                        <div class="bar-chart-label">Vie</div>
+                                    </div>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-value">18</div>
+                                        <div class="bar-chart-bar" style="height:25%;background:var(--secondary)"></div>
+                                        <div class="bar-chart-label">Sáb</div>
+                                    </div>
+                                    <div class="bar-chart-item">
+                                        <div class="bar-chart-value">12</div>
+                                        <div class="bar-chart-bar" style="height:17%;background:var(--secondary)"></div>
+                                        <div class="bar-chart-label">Dom</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--text-muted)">
+                                <strong style="color:var(--text-primary)">284</strong> sesiones activas esta semana
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:22px">
+                    <div class="card-header">
+                        <h3>Empresas Recientes</h3>
+                        <a href="#" style="font-size:12px;color:var(--primary);text-decoration:none;font-weight:600">Ver todas →</a>
+                    </div>
+                    <div class="card-body no-padding">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Empresa</th>
+                                    <th>Plan</th>
+                                    <th>Empleados</th>
+                                    <th>Cursos</th>
+                                    <th>Avance</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#FDD835;color:#212121;font-size:10px">BV</div>
+                                            <div><div class="user-name">Bavaria S.A.</div><div class="user-email">Desde Enero 2026</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Premium</td>
+                                    <td>62</td>
+                                    <td>3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:80px"><div class="progress-bar-fill green" style="width:92%"></div></div>
+                                            <span style="font-size:12px;font-weight:600;color:var(--success)">92%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge completed"><i class="fas fa-circle"></i> Activa</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#1565C0">EP</div>
+                                            <div><div class="user-name">Ecopetrol S.A.</div><div class="user-email">Desde Febrero 2026</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Estándar</td>
+                                    <td>45</td>
+                                    <td>3</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:80px"><div class="progress-bar-fill green" style="width:73%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">73%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge completed"><i class="fas fa-circle"></i> Activa</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar" style="background:#E53935;font-size:10px">GE</div>
+                                            <div><div class="user-name">Grupo Éxito</div><div class="user-email">Desde Febrero 2026</div></div>
+                                        </div>
+                                    </td>
+                                    <td>Premium</td>
+                                    <td>38</td>
+                                    <td>2</td>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px">
+                                            <div class="progress-bar" style="width:80px"><div class="progress-bar-fill blue" style="width:68%"></div></div>
+                                            <span style="font-size:12px;font-weight:600">68%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge completed"><i class="fas fa-circle"></i> Activa</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 8. ADMIN COMPANIES ========== -->
+    <div class="screen" id="admin-companies">
+        <div class="app-layout">
+            <nav class="sidebar">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">GC</div>
+                    <div class="sidebar-logo-text">Grupo Colec<small>Super Administrador</small></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Administración</div>
+                    <div class="sidebar-item"><i class="fas fa-tachometer-alt"></i> Dashboard General</div>
+                    <div class="sidebar-item active"><i class="fas fa-city"></i> Empresas <span class="badge-count">23</span></div>
+                    <div class="sidebar-item"><i class="fas fa-book"></i> Gestión de Cursos</div>
+                    <div class="sidebar-item"><i class="fas fa-users"></i> Todos los Usuarios</div>
+                    <div class="sidebar-item"><i class="fas fa-chart-pie"></i> Analíticas</div>
+                </div>
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar" style="background:linear-gradient(135deg,var(--primary),var(--secondary))">LS</div>
+                        <div class="sidebar-user-info">Admin Grupo Colec<small>Super Administrador</small></div>
+                    </div>
+                </div>
+            </nav>
+            <div class="main-content">
+                <div class="page-header">
+                    <div>
+                        <h2>Gestión de Empresas</h2>
+                        <div class="breadcrumb"><a href="#">Dashboard</a> / Empresas</div>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box"><i class="fas fa-search"></i><input placeholder="Buscar empresa..."></div>
+                        <button class="btn btn-primary"><i class="fas fa-plus"></i> Nueva Empresa</button>
+                    </div>
+                </div>
+
+                <div class="company-cards">
+                    <div class="company-card">
+                        <div class="company-card-header">
+                            <div class="company-card-logo" style="background:#FDD835;color:#212121">BV</div>
+                            <div>
+                                <div class="company-card-name">Bavaria S.A.</div>
+                                <div class="company-card-plan"><span class="status-badge completed" style="margin:0">Premium</span></div>
+                            </div>
+                        </div>
+                        <div class="company-card-stats">
+                            <div class="company-card-stat"><div class="value">62</div><div class="label">Empleados</div></div>
+                            <div class="company-card-stat"><div class="value">92%</div><div class="label">Avance</div></div>
+                            <div class="company-card-stat"><div class="value">3</div><div class="label">Cursos</div></div>
+                            <div class="company-card-stat"><div class="value">48</div><div class="label">Certificados</div></div>
+                        </div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-card-header">
+                            <div class="company-card-logo" style="background:#1565C0">EP</div>
+                            <div>
+                                <div class="company-card-name">Ecopetrol S.A.</div>
+                                <div class="company-card-plan"><span class="status-badge in-progress" style="margin:0">Estándar</span></div>
+                            </div>
+                        </div>
+                        <div class="company-card-stats">
+                            <div class="company-card-stat"><div class="value">45</div><div class="label">Empleados</div></div>
+                            <div class="company-card-stat"><div class="value">73%</div><div class="label">Avance</div></div>
+                            <div class="company-card-stat"><div class="value">3</div><div class="label">Cursos</div></div>
+                            <div class="company-card-stat"><div class="value">28</div><div class="label">Certificados</div></div>
+                        </div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-card-header">
+                            <div class="company-card-logo" style="background:#E53935">GE</div>
+                            <div>
+                                <div class="company-card-name">Grupo Éxito</div>
+                                <div class="company-card-plan"><span class="status-badge completed" style="margin:0">Premium</span></div>
+                            </div>
+                        </div>
+                        <div class="company-card-stats">
+                            <div class="company-card-stat"><div class="value">38</div><div class="label">Empleados</div></div>
+                            <div class="company-card-stat"><div class="value">68%</div><div class="label">Avance</div></div>
+                            <div class="company-card-stat"><div class="value">2</div><div class="label">Cursos</div></div>
+                            <div class="company-card-stat"><div class="value">15</div><div class="label">Certificados</div></div>
+                        </div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-card-header">
+                            <div class="company-card-logo" style="background:#2E7D32">AL</div>
+                            <div>
+                                <div class="company-card-name">Alpina S.A.</div>
+                                <div class="company-card-plan"><span class="status-badge in-progress" style="margin:0">Estándar</span></div>
+                            </div>
+                        </div>
+                        <div class="company-card-stats">
+                            <div class="company-card-stat"><div class="value">28</div><div class="label">Empleados</div></div>
+                            <div class="company-card-stat"><div class="value">55%</div><div class="label">Avance</div></div>
+                            <div class="company-card-stat"><div class="value">3</div><div class="label">Cursos</div></div>
+                            <div class="company-card-stat"><div class="value">8</div><div class="label">Certificados</div></div>
+                        </div>
+                    </div>
+                    <div class="company-card">
+                        <div class="company-card-header">
+                            <div class="company-card-logo" style="background:#6A1B9A">NT</div>
+                            <div>
+                                <div class="company-card-name">Nutresa</div>
+                                <div class="company-card-plan"><span class="status-badge in-progress" style="margin:0">Estándar</span></div>
+                            </div>
+                        </div>
+                        <div class="company-card-stats">
+                            <div class="company-card-stat"><div class="value">22</div><div class="label">Empleados</div></div>
+                            <div class="company-card-stat"><div class="value">41%</div><div class="label">Avance</div></div>
+                            <div class="company-card-stat"><div class="value">2</div><div class="label">Cursos</div></div>
+                            <div class="company-card-stat"><div class="value">3</div><div class="label">Certificados</div></div>
+                        </div>
+                    </div>
+                    <div class="company-card" style="border:2px dashed var(--border);background:var(--bg-main);display:flex;align-items:center;justify-content:center;min-height:200px;cursor:pointer">
+                        <div style="text-align:center;color:var(--text-muted)">
+                            <i class="fas fa-plus-circle" style="font-size:36px;margin-bottom:10px;opacity:0.3"></i>
+                            <div style="font-size:14px;font-weight:600">Agregar Empresa</div>
+                            <div style="font-size:11px;margin-top:4px">Configurar nueva empresa cliente</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-annotation option-a show" style="margin-top:24px">
+                    <div class="tag">Opción A — Tutor LMS Pro</div>
+                    Las empresas se gestionan como CPTs custom (empresa) dentro del plugin B2B. Los cursos se asignan mediante una relación many-to-many con los cursos de Tutor LMS. Los usuarios se vinculan a empresas vía taxonomía personalizada.
+                </div>
+                <div class="option-annotation option-b" style="margin-top:24px">
+                    <div class="tag">Opción B — LMS Custom</div>
+                    Las empresas se almacenan en la tabla custom wp_colec_companies con índices optimizados. La relación empresa-cursos usa wp_colec_company_courses. Todo el sistema B2B está integrado nativamente con el motor LMS propio, sin capas de adaptación entre plugins.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WATERMARK -->
+<div class="watermark">
+    <i class="fas fa-drafting-compass" style="margin-right:4px"></i> Mockup Preliminar — Luis Sánchez · 2026
+</div>
+
+<script>
+    // Screen navigation
+    const tabs = document.querySelectorAll('.nav-tab');
+    const screens = document.querySelectorAll('.screen');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.screen;
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            screens.forEach(s => s.classList.remove('active'));
+            document.getElementById(target).classList.add('active');
+        });
+    });
+
+    // Option toggle
+    const optionBtns = document.querySelectorAll('.option-btn');
+    optionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const option = btn.dataset.option;
+            optionBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('.option-annotation.option-a').forEach(el => {
+                el.classList.toggle('show', option === 'a');
+            });
+            document.querySelectorAll('.option-annotation.option-b').forEach(el => {
+                el.classList.toggle('show', option === 'b');
+            });
+        });
+    });
+</script>
+</body>
+</html>
